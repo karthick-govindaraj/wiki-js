@@ -1,18 +1,14 @@
 ---
 title: IDE 
-description: vs code server debugging steps
+description: server debbuging
 published: true
-date: 2023-11-06T06:59:45.552Z
-tags: 
+date: 2023-11-29T07:44:28.402Z
+tags: ide
 editor: markdown
-dateCreated: 2023-11-06T05:57:30.750Z
+dateCreated: 2023-11-29T07:44:25.443Z
 ---
 
-# Visual Studio Code
 
-
-
-# C/C++ 
 
  
 
@@ -24,23 +20,57 @@ dateCreated: 2023-11-06T05:57:30.750Z
 - Go to the Extensions tab or use the shortcut (Ctrl+Shift+X). 
 - Search for “C/C++" by Microsoft and install it. 
 
-**1.2 Create launch.json Configuration** 
+1**.2 Create launch.json Configuration** 
 
 - Select **Run** from the top menu. 
 - Click "Add Configuration" to create launch.json. 
 - Choose **C/C++: (gdb) Launch** configuration. 
 - Replace the content of launch.json with the provided configuration. 
-     
+     {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "name": "C/C++: Remote",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+          "cwd": "${workspaceFolder}",
+          "stopAtEntry": true,
+          "MIMode": "gdb",
+          "miDebuggerPath": "/opt/riscv/bin/riscv64-unknown-linux-gnu-gdb",
+          "miDebuggerServerAddress": "<ip address>:2000"
+        }
+      ]
+    }
 ![](https://paper-attachments.dropboxusercontent.com/s_A5AA06F2108B46B6B1F3BC89F857D615A08D2FB7368ADEFD4E5CC36732ADD4C2_1693377717062_file.png)
 
 
-**1.3 Cross Compilation Using tasks.json** 
+1**.3 Cross Compilation Using tasks.json** 
 
 - Select Terminal -> Configure Tasks. 
 - Create a new tasks.json file from the template. 
 
 Replace the content of tasks.json with the provided configuration. 
 
+     {
+      "version": "2.0.0",
+      "tasks": [
+        {
+          "label": "C: Build",
+          "type": "shell",
+          "command": "/opt/riscv/bin/riscv64-unknown-linux-gnu-gcc",
+          "args": [
+            "-g",
+            "${file}",
+            "-o",
+            "${fileDirname}/${fileBasenameNoExtension}"
+          ],
+          "group": {
+            "kind": "build"
+          }
+        }
+      ]
+    }
 
  
 
@@ -49,28 +79,25 @@ Replace the content of tasks.json with the provided configuration.
 
 
 ## 2. Building and Remote Debugging 
-   **2.1 Build and Copy Executable to RISC-V Board** 
+    2**.1 Build and Copy Executable to RISC-V Board** 
     - Build the project by pressing **Ctrl+Shift+B** or clicking Terminal -> Run Build Task. 
     - The binary file will be generated in the same directory as the source file. 
     - Copy the executable to the RISC-V board using SCP. 
                 $ scp executable-file user@<ip address>:~/. 
 
 
-  **2.2  Start GDB Server on RISC-V Board** 
-   - Connect to the RISC-V board via SSH. 
-      
-  			$ ssh user@<ip address>
-  
-   - Start the GDB server using the provided command. 
-    
-  			$ gdbserver localhost:2000 executable-file 
+    2.2  **Start GDB Server on RISC-V Board** 
+    - Connect to the RISC-V board via SSH. 
+      $ ssh user@<ip address>
+    - Start the GDB server using the provided command. 
+    $ gdbserver localhost:2000 executable-file 
 
 
- **2.3 Start Debugging in VS Code** 
+    2.3 **Start Debugging in VS Code** 
     - Press F5 or click Run -> Start Debugging. 
     - Set breakpoints in VS Code. 
     - The output will be displayed in the RISC-V board terminal. 
-  **2.4 Check Disassembly** 
+    2.4  **Check Disassembly** 
     - Right-click to view the disassembly of the code using the "Open Disassembly View" option in the VS Code editor. 
 
 
@@ -83,13 +110,30 @@ Replace the content of tasks.json with the provided configuration.
 - Go to the Extensions tab or use the shortcut (Ctrl+Shift+X). 
 - Search for “Python" by Microsoft and install it. 
 
-**1.2 Create launch.json Configuration**
+1**.2 Create launch.json Configuration** 
 
 - Select **Run** from the top menu. 
 - Click "Add Configuration" to create launch.json. 
 - Choose **Python** configuration. 
 - Replace the content of launch.json with the provided configuration. 
-
+     {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "name": "Python: Remote",
+          "type": "python",
+          "request": "attach",
+          "port": 3000,
+          "host": "<ip address>",
+          "pathMappings": [
+            {
+              "localRoot": "${workspaceFolder}",
+              "remoteRoot": "/home/user/example/Python"
+            }
+          ]
+        }
+      ]
+    }
 ![](https://paper-attachments.dropboxusercontent.com/s_A5AA06F2108B46B6B1F3BC89F857D615A08D2FB7368ADEFD4E5CC36732ADD4C2_1693377701659_image.png)
 
 ##  2. Remote Debugging 
@@ -97,22 +141,19 @@ Replace the content of tasks.json with the provided configuration.
 2.1 **Connect to the RISC-V Board via SSH** 
 
 - Establish an SSH connection to the RISC-V board: 
-   
-  		$ ssh user@<ip address>
+    $ ssh user@<ip address>
 
 **2.2 Install debugpy** 
 
 - Install the **debugpy** library on the RISC-V board: 
-    
-  		$ sudo pip3 install debugpy 
+    $ sudo pip3 install debugpy 
 
 **2.3 Start the debugpy Server** 
 
 - Start the debugpy server on the RISC-V board: 
-    
-  		$ python3 -m debugpy --wait-for-client --listen 0.0.0.0:3000 executable-file.py 
+    $ python3 -m debugpy --wait-for-client --listen 0.0.0.0:3000 executable-file.py 
 
-**2.4 Start Debugging in VS Code** 
+2**.4 Start Debugging in VS Code** 
 
 - Press F5 or click Run -> Start Debugging in VS Code. 
 - Set breakpoints within VS Code. 
@@ -126,7 +167,20 @@ Replace the content of tasks.json with the provided configuration.
 - Click "Add Configuration" to create launch.json. 
 - Choose **Node.js: Attach** configuration. 
 - Replace the content of launch.json with the provided configuration. 
-
+     {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "name": "Node: Remote",
+          "type": "node",
+          "request": "attach",
+          "port": 4000,
+          "address": "192.168.4.26",
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/home/user/example/Node"
+        }
+      ]
+    }
 ![](https://paper-attachments.dropboxusercontent.com/s_A5AA06F2108B46B6B1F3BC89F857D615A08D2FB7368ADEFD4E5CC36732ADD4C2_1693378538228_image.png)
 
 
@@ -137,17 +191,15 @@ Replace the content of tasks.json with the provided configuration.
  **2.1 Connect to the RISC-V Board** 
 
 - Connect to the RISC-V board via SSH using the provided command. 
-   		
-  		$ ssh user@<ip address>
+    $ ssh user@<ip address>
 
 **2.2 Start the Node.js Server** 
-  
+
 - Start the Node.js server using the provided command. 
 - The **--inspect-brk** flag enables debugging. 
-  
-		$ node --inspect-brk=0.0.0.0:4000 executable-file.js 
+    $ node --inspect-brk=0.0.0.0:4000 executable-file.js 
 
-**2.3 Start Debugging in VS Code** 
+2**.3 Start Debugging in VS Code** 
 
 - Press F5 or click Run -> Start Debugging. 
 - Set breakpoints in VS Code. 
@@ -172,14 +224,14 @@ Replace the content of tasks.json with the provided configuration.
     $ sudo su 
 
  
-**1.2 Install rustc and cargo** 
+1**.2 Install rustc and cargo** 
 
 - Download the **rustup-init** script and grant execute permissions: 
 
 
-      $ wget -O rustup-init.sh https://sh.rustup.rs 
-      $ chmod +x rustup-init.sh 
-      $ ./rustup-init.sh 
+    $ wget -O rustup-init.sh https://sh.rustup.rs 
+    $ chmod +x rustup-init.sh 
+    $ ./rustup-init.sh 
 
  
 
@@ -205,7 +257,7 @@ Replace the content of tasks.json with the provided configuration.
     $ jupyter notebook --ip 0.0.0.0 --allow-root 
 
  
-**2.2 Access Jupyter Notebook from Host Machine** 
+2**.2 Access Jupyter Notebook from Host Machine** 
 
 - After starting Jupyter Notebook, a listening URL will be displayed. You can access it from your host machine by changing the URL IP to the RISC-V board's IP. 
 
@@ -232,7 +284,13 @@ Replace the content of tasks.json with the provided configuration.
 
 
 
-#   Eclipse CDT
+# ↓  Eclipse CDT
+
+
+| Tab 1                                                                                                                | Tab 2                                                                                                    | Tab 3 |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----- |
+| [C/C++](https://paper.dropbox.com/doc/Temp-dev-content-8JCKtPZ9Eb97AyvNt1W7R#:uid=253772822090068393684423&h2=C/C++) | [](https://paper.dropbox.com/doc/Temp-dev-8JCKtPZ9Eb97AyvNt1W7R#:uid=474831878829229537386713&h2=Python) |       |
+
 
 
 # C/C++
@@ -242,12 +300,10 @@ Replace the content of tasks.json with the provided configuration.
 
 - Download the Eclipse binary from the following link: [Eclipse IDE for C/C++ Developers](https://www.eclipse.org/downloads/packages/release)
 - Extract the Eclipse tar file:
-  	
-  	  $ tar -xzvf eclipse-inst-jre-linux64.tar.gz
+    $ tar -xzvf eclipse-inst-jre-linux64.tar.gz
 - Install Eclipse:
-  
-      $ cd eclipse-installer/
-      $ ./eclipse-inst
+    $ cd eclipse-installer/
+    $ ./eclipse-inst
 
 **1.2. Install Eclipse IDE for Embedded C/C++**
 
@@ -265,7 +321,7 @@ Replace the content of tasks.json with the provided configuration.
 - Update the Toolchain name (e.g., **/opt/riscv/bin**) and click **Finish**.
 - The workspace will be created.
 
-**1.4. Create a C File**
+1**.4. Create a C File**
 
 - Right-click the project folder in Eclipse.
 - Navigate to **New -> File -> Create the "<file name>.c"** file.
@@ -275,33 +331,29 @@ Replace the content of tasks.json with the provided configuration.
 
 - Click the **Hammer icon** below the main menu or Click **Project → Build Project** to compile the "<file name>.c" file.
 
-**1.6. Copy the Executable File to StarFive Board Example**
+1**.6. Copy the Executable File to StarFive Board Example**
 
     $ scp /home/aximsoft/eclipse-workspace/hello/Debug/<file name>.elf user@<ip address>:~/
 
 **1.7. Install GDBserver on RISC-V Board**
 
 - Update the package manager's cache:
-  
-   		 $ sudo apt update
+    $ sudo apt update
 
 
 - Install GDBserver:
-  
-    	$ sudo apt install gdbserver
+    $ sudo apt install gdbserver
 
 
 - Verify the installation:
-  
-    	$ gdbserver --version
+    $ gdbserver --version
 
 **1.8. Start GDBserver on RISC-V Board**
 
 - Start the GDB server:
-  
-    	$ gdbserver localhost:5000 hel <file name> lo.elf
+    $ gdbserver localhost:5000 hel <file name> lo.elf
 
-**1.9. Change Debug Configuration in Eclipse**
+1**.9. Change Debug Configuration in Eclipse**
 
 - Go to the top menu bar in Eclipse.
 - Click Run -> Select **Debug Configurations.**
@@ -331,28 +383,30 @@ Replace the content of tasks.json with the provided configuration.
 **gdbgui** is a web-based graphical interface for the GNU Debugger (**gdb**) that simplifies the process of debugging C programs
 
 
+| Tab 1                                                                                                                                                                                                                               | Tab 2                                                                                                    | Tab 3 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----- |
+| [](https://paper.dropbox.com/doc/Temp-dev-content-8JCKtPZ9Eb97AyvNt1W7R#:uid=253772822090068393684423&h2=C/C++)[C/C++](https://paper.dropbox.com/doc/Temp-dev-content-8JCKtPZ9Eb97AyvNt1W7R#:uid=302300561367064064471301&h2=C/C++) | [](https://paper.dropbox.com/doc/Temp-dev-8JCKtPZ9Eb97AyvNt1W7R#:uid=474831878829229537386713&h2=Python) |       |
+
 # C/C++ 
 ## 1. Installation Steps
 
 1.1**. Install gdbgui on RISC-V Board**
 
 - Install the necessary dependencies and **gdbgui**:
-  
-      $ sudo apt-get install gdb python3
-      $ sudo pip install gdbgui
+    $ sudo apt-get install gdb python3
+    $ sudo pip install gdbgui
 
 **1.2. Compile the Program**
 
 - Compile the program with debugging information using **-g** flag:
 
 
-    	$ gcc -g <file name>.c -o <file name>
+    $ gcc -g <file name>.c -o <file name>
 
 **1.3. Start gdbgui**
 
 - In the terminal, run the following command to start **gdbgui**:
-  
-    	$ gdbgui -r <file name>
+    $ gdbgui -r <file name>
 
 
 - This will start the service at the host IP, typically **http://*****<ip address>*****:5000**.
