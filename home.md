@@ -1,12 +1,11 @@
 ---
-title: Untitled Page
+title: Home
 description: 
 published: true
-date: 2023-11-06T06:40:06.457Z
+date: 2023-11-29T07:50:27.367Z
 tags: 
 editor: markdown
-dateCreated: 2023-11-06T06:39:52.061Z
+dateCreated: 2023-11-29T06:27:22.839Z
 ---
 
-# Header
-Your content here
+welcome to siliconwaves .
