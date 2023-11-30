@@ -2,10 +2,10 @@
 title: IDE
 description: server debbuging
 published: true
-date: 2023-11-29T08:18:32.035Z
+date: 2023-11-30T05:30:41.742Z
 tags: ide
 editor: markdown
-dateCreated: 2023-11-29T07:44:25.443Z
+dateCreated: 2023-11-30T05:30:37.811Z
 ---
 
  
